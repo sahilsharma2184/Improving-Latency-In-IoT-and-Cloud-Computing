@@ -1,0 +1,42 @@
+#Network Simulation Input
+Enter the number of IoT devices: 3
+Enter the packet size (in bytes): 512
+Device 0: Latency = 42.35 ms
+Device 1: Latency = 75.23 ms
+Device 2: Latency = 25.10 ms
+Average Network Latency: 47.56 ms
+
+#Fog Computing Input
+Enter the number of fog nodes: 3
+Enter processing speed (tasks per second) for Fog Node 0: 5
+Enter processing speed (tasks per second) for Fog Node 1: 10
+Enter processing speed (tasks per second) for Fog Node 2: 8
+Enter the task size (number of operations): 50
+Selected Fog Node: 1
+Fog Node 1: Processing Time = 5.00 s
+
+#RL Offloading Input
+Enter the number of states: 5
+Enter the number of actions: 3
+Enter the state (0 to 4): 2
+Enter the action (0 to 2): 1
+Enter the reward: 10
+Chosen action for state 2: 0
+Updated Q-Table:
+[[0. 0. 0.]
+ [0. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 0.]
+ [0. 0. 0.]]
+Do you want to continue (y/n)? y
+Enter the state (0 to 4): 3
+Enter the action (0 to 2): 2
+Enter the reward: 5
+Chosen action for state 3: 0
+Updated Q-Table:
+[[0. 0. 0.]
+ [0. 0. 0.]
+ [0. 1. 0.]
+ [0. 0. 0.5]
+ [0. 0. 0.]]
+Do you want to continue (y/n)? n
