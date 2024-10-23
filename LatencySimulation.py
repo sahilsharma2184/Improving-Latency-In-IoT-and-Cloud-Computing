@@ -20,6 +20,16 @@ def simulate_latency(devices, packet_size):
     avg_latency = total_latency / len(devices)
     print(f"Average Network Latency: {avg_latency:.2f} ms")
 
-# Example usage
-devices = [IoTDevice(i) for i in range(5)]
-simulate_latency(devices, packet_size=256)
+# === User Input Section ===
+try:
+    num_devices = int(input("Enter the number of IoT devices: "))
+    packet_size = int(input("Enter the packet size (in bytes): "))
+
+    # Create IoT devices based on user input
+    devices = [IoTDevice(i) for i in range(num_devices)]
+
+    # Run the simulation with user-defined inputs
+    simulate_latency(devices, packet_size)
+
+except ValueError:
+    print("Please enter valid numeric inputs.")
