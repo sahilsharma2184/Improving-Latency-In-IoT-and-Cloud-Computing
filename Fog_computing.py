@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 class FogNode:
     def __init__(self, node_id, processing_speed):
         self.node_id = node_id
@@ -9,10 +11,13 @@ class FogNode:
         return processing_time
 
 def offload_to_fog(nodes, task_size):
+    processing_times = [node.process_task(task_size) for node in nodes]
+    
     # Find the optimal node with the shortest processing time
     optimal_node = min(nodes, key=lambda node: task_size / node.processing_speed)
     print(f"Selected Fog Node: {optimal_node.node_id}")
-    return optimal_node.process_task(task_size)
+    
+    return processing_times
 
 # === User Input Section ===
 try:
@@ -28,7 +33,16 @@ try:
     task_size = float(input("Enter the task size (number of operations): "))
 
     # Run the offloading simulation
-    offload_to_fog(fog_nodes, task_size)
+    processing_times = offload_to_fog(fog_nodes, task_size)
+
+    # Plotting the processing times
+    node_ids = [node.node_id for node in fog_nodes]
+    
+    plt.bar(node_ids, processing_times, color='skyblue')
+    plt.xlabel('Fog Node ID')
+    plt.ylabel('Processing Time (s)')
+    plt.title(f'Processing Time for Task Size {task_size}')
+    plt.show()
 
 except ValueError:
     print("Please enter valid numeric inputs.")
