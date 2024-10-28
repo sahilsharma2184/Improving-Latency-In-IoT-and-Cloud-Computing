@@ -16,27 +16,53 @@ Selected Fog Node: 1
 Fog Node 1: Processing Time = 5.00 s
 
 #RL Offloading Input
-Enter the number of states: 5
-Enter the number of actions: 3
-Enter the state (0 to 4): 2
-Enter the action (0 to 2): 1
-Enter the reward: 10
-Chosen action for state 2: 0
-Updated Q-Table:
-[[0. 0. 0.]
- [0. 0. 0.]
- [0. 1. 0.]
- [0. 0. 0.]
- [0. 0. 0.]]
-Do you want to continue (y/n)? y
-Enter the state (0 to 4): 3
-Enter the action (0 to 2): 2
-Enter the reward: 5
-Chosen action for state 3: 0
-Updated Q-Table:
-[[0. 0. 0.]
- [0. 0. 0.]
- [0. 1. 0.]
- [0. 0. 0.5]
- [0. 0. 0.]]
-Do you want to continue (y/n)? n
+
+#Enter the number of states: 5
+#Enter the number of actions: 3
+#Enter the state you want to track (0 to 4): 2
+#Enter the state (0 to 4): 2
+#Enter the action (0 to 2): 1
+#Enter the reward: 10
+#Chosen action for state 2: 0
+#Updated Q-Table:
+#[[0. 0. 0.]
+# [0. 0. 0.]
+# [0. 1. 0.]
+# [0. 0. 0.]
+# [0. 0. 0.]]
+#Do you want to continue (y/n)? y
+#Enter the state (0 to 4): 2
+#Enter the action (0 to 2): 1
+#Enter the reward: 15
+#Chosen action for state 2: 1
+#Updated Q-Table:
+#[[0.   0.   0.  ]
+# [0.   0.   0.  ]
+# [0.   2.49 0.  ]
+# [0.   0.   0.  ]
+# [0.   0.   0.  ]]
+#Do you want to continue (y/n)? y
+#Enter the state (0 to 4): 2
+#Enter the state (0 to 4): 2
+#Enter the state (0 to 4): 2
+#Enter the action (0 to 2): 2
+#Enter the reward: 20
+#Chosen action for state 2: 1
+#Updated Q-Table:
+#[[0.     0.     0.    ]
+# [0.     0.     0.    ]
+# [0.     2.49   2.2241]
+# [0.     0.     0.    ]
+# [0.     0.     0.    ]]
+#Do you want to continue (y/n)? y
+#Enter the state (0 to 4): 2
+#Enter the action (0 to 2): 0
+#Enter the reward: 5
+#Chosen action for state 2: 1
+#Updated Q-Table:
+#[[0.     0.     0.    ]
+# [0.     0.     0.    ]
+# [0.7241 2.49   2.2241]
+# [0.     0.     0.    ]
+# [0.     0.     0.    ]]
+#Do you want to continue (y/n)? n
