@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 class RLAgent:
     def __init__(self, num_states, num_actions):
@@ -25,7 +26,22 @@ def main():
 
         # Initialize the RL agent
         agent = RLAgent(num_states, num_actions)
+        
+        # User input: state to track for Q-value progression
+        track_state = int(input(f"Enter the state you want to track (0 to {num_states - 1}): "))
 
+        # Plot setup
+        plt.ion()  # Enable interactive mode for real-time plotting
+        fig, ax = plt.subplots()
+        lines = [ax.plot([], [], label=f"Action {a}")[0] for a in range(num_actions)]
+        ax.set_xlim(0, 10)  # Initial x-axis limit
+        ax.set_ylim(-1, 10)  # y-axis limit based on expected Q-value range
+        ax.set_xlabel("Iterations")
+        ax.set_ylabel("Q-Value")
+        ax.set_title(f"Q-Value Progression for State {track_state}")
+        ax.legend()
+
+        iteration = 0
         # Run multiple iterations to update the Q-table dynamically
         while True:
             # User inputs for state, action, and reward
@@ -43,6 +59,20 @@ def main():
             # Display the updated Q-table
             print("Updated Q-Table:")
             print(agent.q_table)
+
+            # Update the plot for the tracked state
+            for a in range(num_actions):
+                lines[a].set_xdata(np.append(lines[a].get_xdata(), iteration))
+                lines[a].set_ydata(np.append(lines[a].get_ydata(), agent.q_table[track_state, a]))
+            
+            # Adjust x-axis limit if needed
+            ax.set_xlim(0, max(10, iteration + 1))
+            ax.relim()  # Recompute limits
+            ax.autoscale_view()  # Rescale view
+            plt.draw()
+            plt.pause(0.01)  # Small pause for real-time plotting effect
+
+            iteration += 1
 
             # Ask if the user wants to continue or exit
             cont = input("Do you want to continue (y/n)? ").strip().lower()
