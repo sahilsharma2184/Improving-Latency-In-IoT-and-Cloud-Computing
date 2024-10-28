@@ -1,5 +1,6 @@
 import random
 import time
+import matplotlib.pyplot as plt
 
 class IoTDevice:
     def __init__(self, device_id):
@@ -12,13 +13,27 @@ class IoTDevice:
 
 def simulate_latency(devices, packet_size):
     total_latency = 0
+    latencies = []  # Store latencies for each device
+
     for device in devices:
         latency = device.transmit_data(packet_size)
         print(f"Device {device.device_id}: Latency = {latency:.2f} ms")
+        latencies.append(latency)
         total_latency += latency
 
     avg_latency = total_latency / len(devices)
     print(f"Average Network Latency: {avg_latency:.2f} ms")
+
+    # Plotting the latency for each device
+    device_ids = [device.device_id for device in devices]
+    
+    plt.bar(device_ids, latencies, color='lightblue')
+    plt.xlabel('IoT Device ID')
+    plt.ylabel('Network Latency (ms)')
+    plt.title('Network Latency for Each IoT Device')
+    plt.axhline(y=avg_latency, color='r', linestyle='--', label=f'Average Latency ({avg_latency:.2f} ms)')
+    plt.legend()
+    plt.show()
 
 # === User Input Section ===
 try:
