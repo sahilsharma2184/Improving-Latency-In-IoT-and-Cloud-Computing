@@ -16,53 +16,41 @@ Selected Fog Node: 1
 Fog Node 1: Processing Time = 5.00 s
 
 #RL Offloading Input
-
-#Enter the number of states: 5
-#Enter the number of actions: 3
-#Enter the state you want to track (0 to 4): 2
-#Enter the state (0 to 4): 2
-#Enter the action (0 to 2): 1
-#Enter the reward: 10
-#Chosen action for state 2: 0
-#Updated Q-Table:
-#[[0. 0. 0.]
-# [0. 0. 0.]
-# [0. 1. 0.]
-# [0. 0. 0.]
-# [0. 0. 0.]]
-#Do you want to continue (y/n)? y
-#Enter the state (0 to 4): 2
-#Enter the action (0 to 2): 1
-#Enter the reward: 15
-#Chosen action for state 2: 1
-#Updated Q-Table:
-#[[0.   0.   0.  ]
-# [0.   0.   0.  ]
-# [0.   2.49 0.  ]
-# [0.   0.   0.  ]
-# [0.   0.   0.  ]]
-#Do you want to continue (y/n)? y
-#Enter the state (0 to 4): 2
-#Enter the state (0 to 4): 2
-#Enter the state (0 to 4): 2
-#Enter the action (0 to 2): 2
-#Enter the reward: 20
-#Chosen action for state 2: 1
-#Updated Q-Table:
-#[[0.     0.     0.    ]
-# [0.     0.     0.    ]
-# [0.     2.49   2.2241]
-# [0.     0.     0.    ]
-# [0.     0.     0.    ]]
-#Do you want to continue (y/n)? y
-#Enter the state (0 to 4): 2
-#Enter the action (0 to 2): 0
-#Enter the reward: 5
-#Chosen action for state 2: 1
-#Updated Q-Table:
-#[[0.     0.     0.    ]
-# [0.     0.     0.    ]
-# [0.7241 2.49   2.2241]
-# [0.     0.     0.    ]
-# [0.     0.     0.    ]]
-#Do you want to continue (y/n)? n
+Enter the dimension of the state space: 2
+Enter the number of possible actions: 3
+Enter the state you want to track (space-separated, 2 values): 0.5 0.2
+Enter the current state (space-separated, 2 values): 0.4 0.1
+Enter the action taken (0 to 2): 1
+Enter the reward: 1.0
+Enter the next state (space-separated, 2 values): 0.6 0.3
+Is the episode done? (y/n): n
+Q-Values for the tracked state: [[-0.17883386  0.23711383 -0.02248473]]
+Do you want to continue (y/n)? y
+Enter the current state (space-separated, 2 values): 0.6 0.3
+Enter the action taken (0 to 2): 0
+Enter the reward: 0.5
+Enter the next state (space-separated, 2 values): 0.7 0.4
+Is the episode done? (y/n): n
+Q-Values for the tracked state: [[-0.1579088   0.25547218 -0.02113575]]
+Do you want to continue (y/n)? y
+Enter the current state (space-separated, 2 values): 0.7 0.4
+Enter the action taken (0 to 2): 2
+Enter the reward: -0.2
+Enter the next state (space-separated, 2 values): 0.8 0.5
+Is the episode done? (y/n): n
+Q-Values for the tracked state: [[-0.14170972  0.26974496 -0.00472242]]
+Do you want to continue (y/n)? y
+Enter the current state (space-separated, 2 values): 0.8 0.5
+Enter the action taken (0 to 2): 1
+Enter the reward: 0.8
+Enter the next state (space-separated, 2 values): 0.9 0.6
+Is the episode done? (y/n): n
+Q-Values for the tracked state: [[-0.12826318  0.2883817   0.00913956]]
+Do you want to continue (y/n)? y
+Enter the current state (space-separated, 2 values): 0.9 0.6
+Enter the action taken (0 to 2): 0
+Enter the reward: 1.2
+Enter the next state (space-separated, 2 values): 1.0 0.7
+Is the episode done? (y/n): y
+Q-Values for the tracked state: [[-0.11001793  0.3041349   0.02078239]]
+Do you want to continue (y/n)? n
