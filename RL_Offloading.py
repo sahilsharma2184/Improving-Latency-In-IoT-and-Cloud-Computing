@@ -1,114 +1,183 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random
+import torch
+import torch.nn as nn
+import torch.optim as optim
 
-# Define the reinforcement learning agent
-class RLAgent:
-    def __init__(self, num_states, num_actions):
+# Define the neural network for Q-value approximation
+class QNetwork(nn.Module):
+    def __init__(self, state_dim, action_dim):
+        super(QNetwork, self).__init__()
+        self.fc = nn.Sequential(
+            nn.Linear(state_dim, 128),
+            nn.ReLU(),
+            nn.Linear(128, action_dim)
+        )
+
+    def forward(self, state):
+        return self.fc(state)
+
+# Define the Double DQN Agent
+class DoubleDQNAgent:
+    def __init__(self, state_dim, action_dim, lr=0.001, gamma=0.99):
         """
-        Initializing the Q-table with zeros for the specified number of states and actions.
+        Initialize the Double DQN Agent.
         
         Parameters:
-        - num_states: Number of possible states in the environment
-        - num_actions: Number of possible actions in each state
+        - state_dim: Dimension of the state space
+        - action_dim: Number of possible actions
+        - lr: Learning rate for the optimizer
+        - gamma: Discount factor for future rewards
         """
-        self.q_table = np.zeros((num_states, num_actions))  # Initialize Q-table with zeros
+        self.state_dim = state_dim
+        self.action_dim = action_dim
+        self.gamma = gamma
 
-    def choose_action(self, state):
-        """
-        Choose an action based on the highest Q-value for the given state.
-        
-        Parameters:
-        - state: Current state of the agent
-        
-        Returns:
-        - action with the highest Q-value
-        """
-        return np.argmax(self.q_table[state])
+        # Define main and target Q-networks
+        self.q_network = QNetwork(state_dim, action_dim)
+        self.target_network = QNetwork(state_dim, action_dim)
+        self.target_network.load_state_dict(self.q_network.state_dict())  # Synchronize networks
 
-    def update_q_value(self, state, action, reward, learning_rate=0.1, discount_factor=0.9):
-        """
-        Update the Q-value for a specific state-action pair using the Q-learning formula.
-        
-        Parameters:
-        - state: Current state
-        - action: Action taken
-        - reward: Reward received after taking the action
-        - learning_rate: Learning rate for Q-value update (default 0.1)
-        - discount_factor: Discount factor for future rewards (default 0.9)
-        """
-        max_future_q = np.max(self.q_table[state])  # Highest Q-value in the next state
-        current_q = self.q_table[state, action]  # Current Q-value
-        # Calculate the new Q-value
-        new_q = (1 - learning_rate) * current_q + learning_rate * (reward + discount_factor * max_future_q)
-        self.q_table[state, action] = new_q  # Update the Q-table with the new Q-value
+        self.optimizer = optim.Adam(self.q_network.parameters(), lr=lr)
 
-# Main function to initialize and run the Q-learning agent
+    def choose_action(self, state, epsilon=0.1):
+        """
+        Choose an action using an epsilon-greedy policy.
+        """
+        if random.random() < epsilon:
+            return random.randint(0, self.action_dim - 1)  # Random action
+        else:
+            state_tensor = torch.FloatTensor(state).unsqueeze(0)  # Add batch dimension
+            with torch.no_grad():
+                q_values = self.q_network(state_tensor)
+            return torch.argmax(q_values).item()
+
+    def update(self, state, action, reward, next_state, done):
+        """
+        Perform a Double DQN update step.
+        """
+        state_tensor = torch.FloatTensor(state).unsqueeze(0)
+        next_state_tensor = torch.FloatTensor(next_state).unsqueeze(0)
+        action_tensor = torch.LongTensor([action])
+        reward_tensor = torch.FloatTensor([reward])
+        done_tensor = torch.FloatTensor([1.0 if done else 0.0])
+
+        # Compute the target Q-value
+        with torch.no_grad():
+            next_action = torch.argmax(self.q_network(next_state_tensor))
+            target_q_value = reward_tensor + self.gamma * (1 - done_tensor) * self.target_network(next_state_tensor)[0, next_action]
+
+        # Compute the current Q-value
+        q_value = self.q_network(state_tensor)[0, action_tensor]
+
+        # Compute the loss
+        loss = nn.MSELoss()(q_value, target_q_value)
+
+        # Update the Q-network
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+    def update_target_network(self):
+        """
+        Update the target network to match the main Q-network.
+        """
+        self.target_network.load_state_dict(self.q_network.state_dict())
+
+# Utility function to validate and adjust state input
+def validate_state_input(input_string, state_dim):
+    state = list(map(float, input_string.split()))
+    if len(state) < state_dim:
+        print(f"Warning: Input has fewer than {state_dim} values. Filling missing values with 0.0.")
+        state.extend([0.0] * (state_dim - len(state)))
+    elif len(state) > state_dim:
+        print(f"Warning: Input has more than {state_dim} values. Truncating to {state_dim} values.")
+        state = state[:state_dim]
+    return state
+
+# Main function for Double DQN with manual input and graph generation
 def main():
     try:
-        # User input for number of states and actions in the environment
-        num_states = int(input("Enter the number of states: "))
-        num_actions = int(input("Enter the number of actions: "))
+        # User input for state and action dimensions
+        state_dim = int(input("Enter the dimension of the state space: "))
+        action_dim = int(input("Enter the number of possible actions: "))
 
-        # Initialize the RL agent with the specified states and actions
-        agent = RLAgent(num_states, num_actions)
-        
+        # Initialize the Double DQN agent
+        agent = DoubleDQNAgent(state_dim, action_dim)
+
         # User input for the state to track Q-value progression
-        track_state = int(input(f"Enter the state you want to track (0 to {num_states - 1}): "))
+        track_state = validate_state_input(input(f"Enter the state you want to track (space-separated, {state_dim} values): "), state_dim)
 
-        # Set up the plot for real-time Q-value progression for the tracked state
+        # Set up the plot for real-time Q-value progression
         plt.ion()  # Enable interactive mode
         fig, ax = plt.subplots()
-        # Create a line for each action in the tracked state
-        lines = [ax.plot([], [], label=f"Action {a}")[0] for a in range(num_actions)]
-        ax.set_xlim(0, 10)  # Initial x-axis limit
-        ax.set_ylim(-1, 10)  # y-axis limit based on expected Q-value range
+        lines = [ax.plot([], [], label=f"Action {a}")[0] for a in range(action_dim)]
+        ax.set_xlim(0, 10)  # Set initial x-axis limit
+        ax.set_ylim(-1, 10)  # Set y-axis limit
         ax.set_xlabel("Iterations")
         ax.set_ylabel("Q-Value")
         ax.set_title(f"Q-Value Progression for State {track_state}")
         ax.legend()
 
         iteration = 0
-        # Run the Q-learning update in a loop
+        # Run the Double DQN update in a loop
         while True:
-            # User input for state, action, and reward
-            state = int(input(f"Enter the state (0 to {num_states - 1}): "))
-            action = int(input(f"Enter the action (0 to {num_actions - 1}): "))
+            # Input validation for state
+            state = validate_state_input(input(f"Enter the current state (space-separated, {state_dim} values): "), state_dim)
+
+            # Input validation for action
+            action = int(input(f"Enter the action taken (0 to {action_dim - 1}): "))
+            if action < 0 or action >= action_dim:
+                print(f"Error: Action must be between 0 and {action_dim - 1}.")
+                continue
+
+            # Reward input
             reward = float(input("Enter the reward: "))
 
-            # Agent chooses an action based on the current state
-            chosen_action = agent.choose_action(state)
-            print(f"Chosen action for state {state}: {chosen_action}")
+            # Input validation for next state
+            next_state = validate_state_input(input(f"Enter the next state (space-separated, {state_dim} values): "), state_dim)
 
-            # Update the Q-value in the Q-table for the state-action pair
-            agent.update_q_value(state, action, reward)
+            # Done flag input
+            done = input("Is the episode done? (y/n): ").strip().lower() == 'y'
 
-            # Display the updated Q-table after each iteration
-            print("Updated Q-Table:")
-            print(agent.q_table)
+            # Perform the update step
+            agent.update(state, action, reward, next_state, done)
 
-            # Update the plot for the tracked state with Q-values for each action
-            for a in range(num_actions):
+            # Update the target network periodically (every 5 iterations)
+            if iteration % 5 == 0:
+                agent.update_target_network()
+
+            # Display the updated Q-values for the tracked state
+            state_tensor = torch.FloatTensor(track_state).unsqueeze(0)
+            q_values = agent.q_network(state_tensor).detach().numpy()
+            print("Q-Values for the tracked state:", q_values)
+
+            # Update the plot for the tracked state
+            for a in range(action_dim):
                 # Append new data points for each action in the tracked state
                 lines[a].set_xdata(np.append(lines[a].get_xdata(), iteration))
-                lines[a].set_ydata(np.append(lines[a].get_ydata(), agent.q_table[track_state, a]))
-            
-            # Adjust x-axis limit if more iterations are added
+                lines[a].set_ydata(np.append(lines[a].get_ydata(), q_values[0, a]))
+
+            # Extend x-axis limit dynamically to fit the new data
             ax.set_xlim(0, max(10, iteration + 1))
-            ax.relim()  # Recalculate limits based on new data
-            ax.autoscale_view()  # Rescale the view to fit data
+
+            # Rescale the plot to fit the updated data
+            ax.relim()
+            ax.autoscale_view()
+
+            # Draw the updated graph and pause briefly to make the update visible
             plt.draw()
-            plt.pause(0.01)  # Small pause to create a real-time plotting effect
+            plt.pause(0.5)  # Pause to show the graph for 0.5 seconds after each iteration
 
             iteration += 1
 
-            # Ask if the user wants to continue the simulation or exit
+            # Ask if the user wants to continue
             cont = input("Do you want to continue (y/n)? ").strip().lower()
             if cont != 'y':
                 break
 
     except ValueError:
         print("Please enter valid numeric inputs.")
-
-# Run the main function when the script is executed
 if __name__ == "__main__":
     main()
